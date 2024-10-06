@@ -1,18 +1,24 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:test_weather/services/shared_preferences_service/shared_preferences_service.dart';
 
-class FirebaseServise {
+class FirebaseService {
   //Синглтон сервиса работы с FireBase
-  static final FirebaseServise _singleton = FirebaseServise._internal();
-  factory FirebaseServise() => _singleton;
-  FirebaseServise._internal();
+  static final FirebaseService _singleton = FirebaseService._internal();
+  factory FirebaseService() => _singleton;
+  FirebaseService._internal();
 
   final FirebaseAuth auth = FirebaseAuth.instance;
-  final User? futternUser = FirebaseAuth.instance.currentUser;
+  final User? user = FirebaseAuth.instance.currentUser;
+  final SharedPreferencesService prefsService = SharedPreferencesServiceImpl();
+
+  void onListenUser(void Function(User?)? doListen) {
+    auth.authStateChanges().listen(doListen);
+  }
 
   void onRegister(
       {required String emailAddress, required String password}) async {
     try {
-      final credential = await auth.createUserWithEmailAndPassword(
+      await auth.createUserWithEmailAndPassword(
         email: emailAddress,
         password: password,
       );
@@ -29,7 +35,7 @@ class FirebaseServise {
 
   void onLogin({required String emailAddress, required String password}) async {
     try {
-      final credential = await FirebaseAuth.instance
+      await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -40,9 +46,8 @@ class FirebaseServise {
     }
   }
 
-  void logOut() {}
-
-  void onListenUser(void Function(User?)? doListen) {
-    auth.authStateChanges().listen(doListen);
+  void logOut() async {
+    await prefsService.removeLoginStatus();
+    await auth.signOut();
   }
 }

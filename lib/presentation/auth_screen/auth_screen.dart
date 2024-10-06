@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_weather/services/firebase_servise/firebase_servise.dart';
+import 'package:test_weather/services/firebase_service/firebase_service.dart';
 
 // ignore: must_be_immutable
 class AuthScreen extends StatefulWidget {
@@ -11,7 +11,7 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final FirebaseServise firebase = FirebaseServise();
+  final FirebaseService firebase = FirebaseService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 

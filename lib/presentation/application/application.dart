@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test_weather/presentation/auth_screen/auth_screen.dart';
-import 'package:test_weather/services/firebase_servise/firebase_servise.dart';
+import 'package:test_weather/services/firebase_service/firebase_service.dart';
 import 'package:test_weather/weather_screen/weather_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -13,7 +13,7 @@ class Application extends StatefulWidget {
 }
 
 class _ApplicationState extends State<Application> {
-  final FirebaseServise firebase = FirebaseServise();
+  final FirebaseService firebase = FirebaseService();
 
   @override
   void initState() {
