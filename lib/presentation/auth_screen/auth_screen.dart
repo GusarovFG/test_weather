@@ -29,50 +29,58 @@ class _AuthScreenState extends State<AuthScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(15),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          Column(
-            children: [
-              TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black,
-                      width: 1,
+    return Scaffold(
+      body: Container(
+        padding: const EdgeInsets.all(15),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            Column(
+              children: [
+                TextField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 1,
+                      ),
                     ),
                   ),
+                  controller: _emailController,
                 ),
-                controller: _emailController,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.black,
-                      width: 1,
+                const SizedBox(
+                  height: 10,
+                ),
+                TextField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                        width: 1,
+                      ),
                     ),
                   ),
+                  controller: _passwordController,
                 ),
-                controller: _passwordController,
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              FilledButton(
-                onPressed: () {
-                  widget.isLogin ? firebase.onLoggin() : firebase.onRegister();
-                },
-                child: Text(widget.isLogin ? 'Вход' : 'Регистрация'),
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(
+                  height: 20,
+                ),
+                FilledButton(
+                  onPressed: () {
+                    widget.isLogin
+                        ? firebase.onLogin(
+                            emailAddress: _emailController.text,
+                            password: _passwordController.text)
+                        : firebase.onRegister(
+                            emailAddress: _emailController.text,
+                            password: _passwordController.text);
+                  },
+                  child: Text(widget.isLogin ? 'Вход' : 'Регистрация'),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

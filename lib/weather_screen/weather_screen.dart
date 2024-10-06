@@ -10,6 +10,6 @@ class WeatherScreen extends StatefulWidget {
 class _WeatherScreenState extends State<WeatherScreen> {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    return Scaffold(body: Container());
   }
 }
