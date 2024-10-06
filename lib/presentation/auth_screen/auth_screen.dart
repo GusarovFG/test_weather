@@ -27,6 +27,12 @@ class _AuthScreenState extends State<AuthScreen> {
     super.dispose();
   }
 
+  void toggleIsLogin() {
+    setState(() {
+      widget.isLogin = !widget.isLogin;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +83,10 @@ class _AuthScreenState extends State<AuthScreen> {
                   },
                   child: Text(widget.isLogin ? 'Вход' : 'Регистрация'),
                 ),
+                TextButton(
+                  onPressed: () => toggleIsLogin(),
+                  child: const Text('Войти'),
+                )
               ],
             ),
           ],

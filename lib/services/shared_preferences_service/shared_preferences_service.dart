@@ -1,6 +1,8 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 abstract class SharedPreferencesService {
+  //Инициализация SharedPreferences
+  Future<void> init();
   //Сохранение статуса авторизации
   Future<void> savingLoginStatus(String uid);
   //Проверка на статус авторизации
@@ -16,21 +18,25 @@ class SharedPreferencesServiceImpl implements SharedPreferencesService {
   factory SharedPreferencesServiceImpl() => _singleton;
   SharedPreferencesServiceImpl._internal();
 
+  late final SharedPreferences _prefs;
+
+  @override
+  Future<void> init() async {
+    _prefs = await SharedPreferences.getInstance();
+  }
+
   @override
   Future<void> savingLoginStatus(String uid) async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('uid', uid);
+    await _prefs.setString('uid', uid);
   }
 
   @override
   Future<bool> userIsLoginCheck() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.containsKey('uid');
+    return _prefs.containsKey('uid');
   }
 
   @override
   Future<void> removeLoginStatus() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('uid');
+    await _prefs.remove('uid');
   }
 }

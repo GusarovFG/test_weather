@@ -11,17 +11,21 @@ class FirebaseService {
   final User? user = FirebaseAuth.instance.currentUser;
   final SharedPreferencesService prefsService = SharedPreferencesServiceImpl();
 
-  void onListenUser(void Function(User?)? doListen) {
-    auth.authStateChanges().listen(doListen);
+  void onListenUser(void Function(User?)? doListen) async {
+    if (await prefsService.userIsLoginCheck()) {
+      auth.authStateChanges().listen(doListen);
+    }
   }
 
   void onRegister(
       {required String emailAddress, required String password}) async {
     try {
-      await auth.createUserWithEmailAndPassword(
+      final UserCredential userCredential =
+          await auth.createUserWithEmailAndPassword(
         email: emailAddress,
         password: password,
       );
+      await prefsService.savingLoginStatus(userCredential.user!.uid);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -35,8 +39,9 @@ class FirebaseService {
 
   void onLogin({required String emailAddress, required String password}) async {
     try {
-      await FirebaseAuth.instance
+      final UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: emailAddress, password: password);
+      await prefsService.savingLoginStatus(userCredential.user!.uid);
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
