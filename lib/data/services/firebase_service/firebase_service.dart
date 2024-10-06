@@ -1,5 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:test_weather/services/shared_preferences_service/shared_preferences_service.dart';
+import 'package:test_weather/data/services/shared_preferences_service/shared_preferences_service.dart';
 
 class FirebaseService {
   //Синглтон сервиса работы с FireBase

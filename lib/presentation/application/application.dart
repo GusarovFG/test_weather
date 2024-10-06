@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:test_weather/presentation/auth_screen/auth_screen.dart';
-import 'package:test_weather/services/firebase_service/firebase_service.dart';
+import 'package:test_weather/data/services/firebase_service/firebase_service.dart';
 import 'package:test_weather/presentation/weather_screen/weather_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

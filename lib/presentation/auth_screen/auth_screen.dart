@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_weather/services/firebase_service/firebase_service.dart';
+import 'package:test_weather/data/services/firebase_service/firebase_service.dart';
 
 // ignore: must_be_immutable
 class AuthScreen extends StatefulWidget {
