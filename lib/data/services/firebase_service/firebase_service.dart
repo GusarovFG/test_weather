@@ -12,9 +12,7 @@ class FirebaseService {
   final SharedPreferencesService prefsService = SharedPreferencesServiceImpl();
 
   void onListenUser(void Function(User?)? doListen) async {
-    if (await prefsService.userIsLoginCheck()) {
-      auth.authStateChanges().listen(doListen);
-    }
+    auth.authStateChanges().listen(doListen);
   }
 
   void onRegister(

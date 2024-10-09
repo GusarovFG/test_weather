@@ -42,6 +42,7 @@ class _ApplicationState extends State<Application> {
   Widget build(BuildContext context) {
     return MaterialApp(
       navigatorKey: navigatorKey,
+      theme: ThemeData(fontFamily: 'Cruinn'),
       home: Scaffold(
           body: AuthScreen(
         isLogin: false,
