@@ -79,7 +79,7 @@ class WeatherType {
       case >= 801 && < 805:
         return Image.asset('assets/cloudy.png');
       default:
-        return Image.asset('assets/clear.png');
+        return Image.asset('assets/sun.png');
     }
   }
 }
