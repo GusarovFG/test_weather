@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:test_weather/data/services/firebase_service/firebase_service.dart';
+import 'package:test_weather/data/services/firebase_service/firebase_auth_service/firebase_service.dart';
 import 'package:test_weather/domain/models/user_model/user_model.dart';
 
 part 'authentication_event.dart';

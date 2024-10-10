@@ -41,7 +41,6 @@ class LocationService {
   Future<LocationData?> getLocation() async {
     if (await _checkPermission()) {
       final locationData = await _location.getLocation();
-      print("Локация");
       return locationData;
     } else {
       return null;

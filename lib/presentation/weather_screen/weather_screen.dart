@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:test_weather/data/services/firebase_service/firebase_service.dart';
+import 'package:test_weather/data/services/firebase_service/firebase_auth_service/firebase_service.dart';
 import 'package:test_weather/presentation/map_screen/map_screen.dart';
 import 'package:test_weather/presentation/weather_screen/current_weather_screen.dart';
 import 'package:test_weather/presentation/weather_screen/weather_bloc/weather_bloc.dart';
