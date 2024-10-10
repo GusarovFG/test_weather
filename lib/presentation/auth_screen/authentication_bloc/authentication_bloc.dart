@@ -8,19 +8,25 @@ part 'authentication_state.dart';
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
   final FirebaseService firebaseService = FirebaseService();
+  bool isRegistration;
 
-  AuthenticationBloc() : super(AuthenticationInitialState()) {
+  AuthenticationBloc(this.isRegistration)
+      : super(AuthenticationInitialState()) {
     on<AuthenticationEvent>((event, emit) {});
 
     on<SignUpUser>((event, emit) async {
       emit(AuthenticationLoadingState(isLoading: true));
       try {
-        final UserModel? user = await firebaseService.onRegister(
-            emailAddress: event.email, password: event.password);
+        final UserModel? user = isRegistration
+            ? await firebaseService.onRegister(
+                emailAddress: event.email, password: event.password)
+            : await firebaseService.onLogin(
+                emailAddress: event.email, password: event.password);
         if (user != null) {
           emit(AuthenticationSuccessState(user));
         } else {
-          emit(const AuthenticationFailureState('create user failed'));
+          emit(const AuthenticationFailureState(
+              'Некорректный email или пароль'));
         }
       } catch (e) {
         print(e.toString());

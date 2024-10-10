@@ -17,7 +17,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final FirebaseService firebase = FirebaseService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final AuthenticationBloc bloc = AuthenticationBloc();
+  final AuthenticationBloc bloc = AuthenticationBloc(true);
 
   @override
   void initState() {
@@ -34,6 +34,7 @@ class _AuthScreenState extends State<AuthScreen> {
   void toggleIsLogin() {
     setState(() {
       widget.isLogin = !widget.isLogin;
+      bloc.isRegistration = !bloc.isRegistration;
     });
   }
 
@@ -87,12 +88,23 @@ class _AuthScreenState extends State<AuthScreen> {
                             final stateFaluer =
                                 state as AuthenticationFailureState;
                             return SimpleDialog(
-                              title: const Text('Ошибка регистрации'),
+                              title: const Text(
+                                'Ошибка регистрации',
+                                textAlign: TextAlign.center,
+                              ),
                               children: [
                                 Column(
                                   children: [
                                     Text(stateFaluer.errorMessage),
+                                    const SizedBox(
+                                      height: 15,
+                                    ),
                                     FilledButton(
+                                      style: ButtonStyle(
+                                        backgroundColor:
+                                            WidgetStateProperty.all(
+                                                Colors.blue),
+                                      ),
                                       onPressed: () {
                                         Navigator.pop(context);
                                       },
@@ -107,8 +119,6 @@ class _AuthScreenState extends State<AuthScreen> {
                     }
                   },
                   builder: (context, state) {
-                    print(state.runtimeType);
-
                     return SizedBox(
                       height: 60,
                       width: double.infinity,
