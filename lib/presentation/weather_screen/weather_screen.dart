@@ -7,6 +7,7 @@ import 'package:test_weather/presentation/weather_screen/weather_bloc/weather_bl
 
 class WeatherScreen extends StatefulWidget {
   const WeatherScreen({super.key});
+  final String id = 'WeatherScreen';
 
   @override
   State<WeatherScreen> createState() => _WeatherScreenState();
@@ -33,10 +34,10 @@ class _WeatherScreenState extends State<WeatherScreen> {
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => MapScreen()));
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const MapScreen()));
               },
-              icon: Icon(Icons.map))
+              icon: const Icon(Icons.map))
         ],
       ),
       body: BlocConsumer<WeatherBloc, WeatherState>(
@@ -48,8 +49,25 @@ class _WeatherScreenState extends State<WeatherScreen> {
           print(state.runtimeType);
           switch (state.runtimeType) {
             case WeatherSuccess:
-              final succ = state as WeatherSuccess;
-              return CurrentWeatherScreen(weather: succ.weather);
+              final succsess = state as WeatherSuccess;
+              return CurrentWeatherScreen(weather: succsess.weather);
+            case WeatherFailure:
+              return SimpleDialog(
+                title: const Text('Упс!'),
+                children: [
+                  const Text(
+                    'Что-то пошло не так...',
+                  ),
+                  FilledButton(
+                    onPressed: () {
+                      context.read<WeatherBloc>().add(WeatherLoadEvent());
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Повторить'),
+                  )
+                ],
+              );
+
             default:
               return const Center(child: CircularProgressIndicator());
           }

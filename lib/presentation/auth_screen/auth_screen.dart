@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:test_weather/data/services/firebase_service/firebase_service.dart';
+import 'package:test_weather/presentation/auth_screen/authentication_bloc/authentication_bloc.dart';
+import 'package:test_weather/presentation/weather_screen/weather_screen.dart';
 
 // ignore: must_be_immutable
 class AuthScreen extends StatefulWidget {
@@ -14,6 +17,7 @@ class _AuthScreenState extends State<AuthScreen> {
   final FirebaseService firebase = FirebaseService();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final AuthenticationBloc bloc = AuthenticationBloc();
 
   @override
   void initState() {
@@ -66,24 +70,67 @@ class _AuthScreenState extends State<AuthScreen> {
                 const SizedBox(
                   height: 30,
                 ),
-                SizedBox(
-                  height: 60,
-                  width: MediaQuery.sizeOf(context).width - 40,
-                  child: FilledButton(
-                    style: ButtonStyle(
-                      backgroundColor: WidgetStateProperty.all(Colors.blue),
-                    ),
-                    onPressed: () {
-                      widget.isLogin
-                          ? firebase.onLogin(
-                              emailAddress: _emailController.text,
-                              password: _passwordController.text)
-                          : firebase.onRegister(
-                              emailAddress: _emailController.text,
-                              password: _passwordController.text);
-                    },
-                    child: Text(widget.isLogin ? 'Вход' : 'Регистрация'),
-                  ),
+                BlocConsumer<AuthenticationBloc, AuthenticationState>(
+                  bloc: bloc,
+                  listener: (context, state) {
+                    switch (state.runtimeType) {
+                      case const (AuthenticationSuccessState):
+                        Navigator.pushNamedAndRemoveUntil(
+                          context,
+                          const WeatherScreen().id,
+                          (route) => false,
+                        );
+                      case const (AuthenticationFailureState):
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            final stateFaluer =
+                                state as AuthenticationFailureState;
+                            return SimpleDialog(
+                              title: const Text('Ошибка регистрации'),
+                              children: [
+                                Column(
+                                  children: [
+                                    Text(stateFaluer.errorMessage),
+                                    FilledButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Ок'),
+                                    )
+                                  ],
+                                )
+                              ],
+                            );
+                          },
+                        );
+                    }
+                  },
+                  builder: (context, state) {
+                    print(state.runtimeType);
+
+                    return SizedBox(
+                      height: 60,
+                      width: double.infinity,
+                      child: FilledButton(
+                        style: ButtonStyle(
+                          backgroundColor: WidgetStateProperty.all(Colors.blue),
+                        ),
+                        onPressed: () {
+                          bloc.add(
+                            SignUpUser(
+                              _emailController.text.trim(),
+                              _passwordController.text.trim(),
+                            ),
+                          );
+                        },
+                        child: (state is! AuthenticationLoadingState ||
+                                state is AuthenticationFailureState)
+                            ? Text(widget.isLogin ? 'Вход' : 'Регистрация')
+                            : const CircularProgressIndicator(),
+                      ),
+                    );
+                  },
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

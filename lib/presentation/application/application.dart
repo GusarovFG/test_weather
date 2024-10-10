@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:test_weather/presentation/auth_screen/auth_screen.dart';
 import 'package:test_weather/data/services/firebase_service/firebase_service.dart';
-import 'package:test_weather/presentation/weather_screen/weather_screen.dart';
+import 'package:test_weather/presentation/auth_screen/authentication_bloc/authentication_bloc_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -18,24 +17,6 @@ class _ApplicationState extends State<Application> {
   @override
   void initState() {
     super.initState();
-    firebase.onListenUser((user) {
-      if (user == null) {
-        Navigator.push(
-          navigatorKey.currentContext!,
-          MaterialPageRoute(
-            builder: (_) => AuthScreen(isLogin: false),
-          ),
-        );
-      } else {
-        print('user $user');
-        Navigator.push(
-          navigatorKey.currentContext!,
-          MaterialPageRoute(
-            builder: (_) => const WeatherScreen(),
-          ),
-        );
-      }
-    });
   }
 
   @override
@@ -43,10 +24,7 @@ class _ApplicationState extends State<Application> {
     return MaterialApp(
       navigatorKey: navigatorKey,
       theme: ThemeData(fontFamily: 'Cruinn'),
-      home: Scaffold(
-          body: AuthScreen(
-        isLogin: false,
-      )),
+      home: const Scaffold(body: AuthenticationBlocScreen()),
     );
   }
 }

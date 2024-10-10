@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:test_weather/data/network/api_key.dart';
-import 'package:test_weather/domain/models/weather_model.dart';
+import 'package:test_weather/domain/models/weather_models/weather_model.dart';
 
 abstract class WeatherApi {
-  Future<Weather> fetchWeather({required String lon, required String lat});
+  Future<Weather?> fetchWeather({required String lon, required String lat});
 }
 
 class WeatherApiImpl implements WeatherApi {
@@ -17,7 +17,7 @@ class WeatherApiImpl implements WeatherApi {
   final String _apiKey = apiKey;
 
   @override
-  Future<Weather> fetchWeather(
+  Future<Weather?> fetchWeather(
       {required String lon, required String lat}) async {
     var response = await _dio.get(
         'https://api.openweathermap.org/data/2.5/weather?lat=$lat&lon=$lon&appid=$_apiKey&units=metric&lang=ru');

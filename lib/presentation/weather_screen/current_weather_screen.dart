@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test_weather/domain/models/weather_model.dart';
+import 'package:test_weather/domain/models/weather_models/weather_model.dart';
 
 class CurrentWeatherScreen extends StatelessWidget {
   final Weather weather;

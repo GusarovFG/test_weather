@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test_weather/data/services/shared_preferences_service/shared_preferences_service.dart';
+import 'package:test_weather/domain/models/user_model/user_model.dart';
 
 class FirebaseService {
   //Синглтон сервиса работы с FireBase
@@ -15,15 +16,24 @@ class FirebaseService {
     auth.authStateChanges().listen(doListen);
   }
 
-  void onRegister(
+  Future<UserModel?> onRegister(
       {required String emailAddress, required String password}) async {
     try {
       final UserCredential userCredential =
           await auth.createUserWithEmailAndPassword(
-        email: emailAddress,
-        password: password,
+        email: emailAddress.trim(),
+        password: password.trim(),
       );
       await prefsService.savingLoginStatus(userCredential.user!.uid);
+
+      final User? firebaseUser = userCredential.user;
+      if (firebaseUser != null) {
+        return UserModel(
+          id: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          displayName: firebaseUser.displayName ?? '',
+        );
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -33,6 +43,7 @@ class FirebaseService {
     } catch (e) {
       print(e);
     }
+    return null;
   }
 
   void onLogin({required String emailAddress, required String password}) async {
