@@ -1,0 +1,1 @@
+ C:\\Development\\test_weather\\test_weather\\.dart_tool\\flutter_build\\c022d89dccb21b5072dedb0d04e3cd12\\native_assets.yaml: 
