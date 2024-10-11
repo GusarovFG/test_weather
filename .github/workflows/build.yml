@@ -1,111 +1,223 @@
-name: "Build"
+name: CI
 
 on:
-  pull_request:
-    branches:
-      - weather
-      - master
   push:
     branches:
-      - weather
-      - master
+      - main
+  pull_request:
+    branches:
+      - main
 
-jobs:  
-  build:      
-    name: Build & Release 
-    runs-on: macos-latest 
-
+jobs:
+  flutter_test:
+    name: Run Flutter Test
+    runs-on: ubuntu-latest
     steps:
-        #1 Checkout Repository
-      - name: Checkout Repository
-        uses: actions/checkout@v3
-
-        #2 Setup Java
-      - name: Set Up Java
-        uses: actions/setup-java@v3.12.0
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
-          distribution: 'oracle'
+          distribution: 'temurin'
           java-version: '17'
-
-        #3 Setup Flutter
-      - name: Set Up Flutter
-        uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2
         with:
-          flutter-version: '3.22.2'
           channel: 'stable'
+      - run: flutter pub get
+      - run: flutter --version
+      - run: flutter analyze
+      - run: flutter test
 
-        #4 Install Dependencies
-      - name: Install Dependencies
-        run: flutter pub get
-
-        #5 Setup Keystore
-      - name: Decode Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > android/app/keystore.jks
-          
-      - name: Create key.properties
-        run: |
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" > android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "storeFile=keystore.jks" >> android/key.properties
-        
-       #6 Building APK
-      - name: Build APK
-        run: flutter build apk --release
-
-        #7 Building App Bundle (aab)
-      - name: Build appBundle
-        run: flutter build appbundle
-
-        #8 Build IPA ( IOS Build )
-      - name: Build IPA
-        run: flutter build ipa --no-codesign
-
-      - name: Compress Archives and IPAs
-        run: |
-          cd build
-          tar -czf ios_build.tar.gz ios
-
-        #9 Upload Artifacts
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+  build_iOSApp:
+    name: Build Flutter App (iOS)
+    needs: [flutter_test]
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
-          name: Releases
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
-            build/ios_build.tar.gz
-
-        #10 Extract Version
-      - name: Extract version from pubspec.yaml
-        id: extract_version
-        run: |
-          version=$(grep '^version: ' pubspec.yaml | cut -d ' ' -f 2 | tr -d '\r')
-          echo "VERSION=$version" >> $GITHUB_ENV
-
-        #11 Check if Tag Exists
-      - name: Check if Tag Exists
-        id: check_tag
-        run: |
-          if git rev-parse "v${{ env.VERSION }}" >/dev/null 2>&1; then
-            echo "TAG_EXISTS=true" >> $GITHUB_ENV
-          else
-            echo "TAG_EXISTS=false" >> $GITHUB_ENV
-          fi
-
-        #12 Modify Tag if it Exists
-      - name: Modify Tag
-        if: env.TAG_EXISTS == 'true'
-        id: modify_tag
-        run: |
-          new_version="${{ env.VERSION }}-build-${{ github.run_number }}"
-          echo "VERSION=$new_version" >> $GITHUB_ENV
-        
-        #13 Create Release
-      - name: Create Release
-        uses: ncipollo/release-action@v1
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
         with:
-          artifacts: "build/app/outputs/flutter-apk/app-release.apk,build/app/outputs/bundle/release/app-release.aab,build/ios_build.tar.gz"
-          tag: v${{ env.VERSION }}
-          token: ${{ secrets.TOKEN }}
+          flutter-version: '3.19.0' // specify the Flutter SDK version you want to use (use the one the project is built on)
+          dart-verion: '3.3.4' // specify the version as well
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter clean
+      - run: |
+          flutter build ios --no-codesign
+          cd build/ios/iphoneos
+          mkdir Payload
+          cd Payload
+          ln -s ../Runner.app
+          cd ..
+          zip -r app.ipa Payload
+
+  build_androidApk:
+    name: Build Flutter App (Android)
+    needs: [flutter_test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      - run: flutter clean
+      - run: flutter build apk --debug
+      - uses: ncipollo/release-action@v1
+        with:
+          artifacts: "build/app/outputs/apk/debug/*"
+          tag: v1.0.${{ github.run_number}}
+          token: ${{ secrets.TOKEN}}
+To generate the token for the secret in ${{ secrets.TOKEN}}:
+Step 1: Generate GitHub Token
+Go to your GitHub account settings: https://github.com/settings/profile.
+
+Navigate to "Developer settings" from the left sidebar.
+
+Click on "Personal access tokens."
+
+Click the "Generate token" button.
+
+Provide a name for your token, select the scopes/permissions needed, and make sure to check the repo scope if your workflow requires access to private repositories.
+
+Scroll down and click the "Generate token" button at the bottom.
+
+Copy the generated token immediately; you won't be able to see it again.
+
+Step 2: Add Token as a Repository Secret
+Go to your GitHub repository.
+
+Navigate to the "Settings" tab.
+
+In the left sidebar, click on "Secrets."
+
+Click on the "New repository secret" button.
+
+For "Name," enter TOKEN.
+
+For "Value," paste the GitHub token you generated.
+
+Click the "Add secret" button.
+
+Analyzing the workflow:
+This workflow performs the following tasks:
+
+Flutter Test Job:
+
+Runs Flutter tests on the ubuntu-latest environment.
+iOS App Build Job:
+
+Builds the iOS app on the macos-latest environment. This job depends on the completion of the Flutter test job.
+Android App Build Job:
+
+Builds the Android app as an App Bundle on the ubuntu-latest environment. This job also depends on the completion of the Flutter test job.
+Understanding the Workflow:
+Flutter Test Job:
+The "flutter_test" job sets up a Flutter environment on an Ubuntu machine, fetches dependencies, runs tests, and analyzes code using Flutter commands. It serves as the foundation for subsequent build jobs.
+
+iOS App Build Job:
+The "build_iOSApp" job builds the iOS app on a macOS machine. It depends on the completion of the "flutter_test" job, ensuring that tests pass before attempting the build. The Flutter clean command removes previous build artifacts, and flutter build ios --no-codesign builds the iOS app without code signing.
+
+Android App Build Job:
+The "build_androidApk" job builds the Android app as an App Bundle on an Ubuntu machine. Like the iOS job, it depends on the success of the "flutter_test" job. The Flutter clean command clears previous artifacts, and flutter build appbundle generates the Android App Bundle.
+
+Uses of- uses: in the Workflow:
+actions/checkout@v3:
+
+This step uses the official GitHub Actions action to check out the repository code. It ensures that the workflow has access to the project's source code for subsequent steps.
+
+Learn more: https://github.com/actions/checkout
+
+actions/setup-java@v3:
+
+This step sets up the Java environment using the specified distribution (temurin) and version (17). While this might seem unnecessary for a Flutter project, some Flutter dependencies may require Java during the build process.
+
+Learn more: https://github.com/actions/setup-java
+
+subosito/flutter-action@v2:
+
+This step uses a third-party GitHub Actions action provided by the user subosito to set up the Flutter environment. It allows specifying the Flutter channel, and in this case, it is set to 'stable'.
+
+Learn more: https://github.com/subosito/flutter-action
+
+ncipollo/release-action@v1:
+
+This step is used to simplify the process of releasing artifacts, such as APKs for Android applications. In the provided example, the action is being used to release the Android APKs as part of the CI/CD workflow
+
+Learn more: https://github.com/ncipollo/release-action
+
+needsSection:
+The needs section in the jobs (build_iOSApp and build_androidApk) specifies dependencies between jobs. In this workflow:
+
+build_iOSAppJob:
+
+It specifies needs: [flutter_test], indicating that this job depends on the successful completion of the flutter_test job. This ensures that the Flutter tests (flutter test) are executed and pass before attempting to build the iOS app.
+build_androidApkJob:
+
+Similar to the iOS job, it specifies needs: [flutter_test], meaning that this job depends on the successful completion of the flutter_test job. This ensures that the Flutter tests are run and succeed before proceeding to build the Android app.
+Significance of Dependencies:
+By using the needs section, you establish a dependency chain between jobs. This is crucial in scenarios where you want to ensure that certain tasks, such as tests, are successful before proceeding to subsequent tasks, like building applications. It helps prevent unnecessary builds if tests fail, saving time and resources.
+
+In this specific workflow:
+
+The flutter_test job is the foundation, ensuring that tests are executed whenever there's a push or pull request to the main branch.
+
+The build_iOSApp and build_androidApk jobs rely on the success of flutter_test, preventing them from running if the tests fail. This ensures that only successfully tested code progresses to the build stages.
+
+In summary, the uses of - uses: represent steps in the workflow, and the needs section establishes dependencies between jobs, ensuring a logical sequence of execution and preventing unnecessary work in case of test failures.
+
+Step 4: Enable GitHub Actions Workflow
+Save the workflow file as .github/workflows/ci.yml in your Flutter project.
+
+Push the changes to your GitHub repository.
+
+
+Copy
+
+Copy
+git push
+Click on Actions
+
+
+
+Flutter Test Job
+
+
+
+Flutter Build Flutter App (iOS)
+
+
+
+Flutter Build Flutter App (Android)
+
+
+
+2 Releases
+
+
+
+
+
+By implementing this GitHub Actions workflow, you've automated your Flutter project's testing and building processes. This comprehensive approach ensures that your
+
+code is thoroughly tested, and the iOS and Android builds are generated automatically in a controlled and orchestrated manner.
+
+This automation not only improves the reliability of your releases but also frees up valuable developer time, allowing you to focus on coding and innovation rather than manual, repetitive tasks.
+
+Dive more into Github Action using https://docs.github.com/en/actions
+
+PS: You can also build for Web, MacOS, and other platforms as well, it's easy to get to them knowing these.
+
+Happy automating! 🚀
+
+
+1
+
+
+
+
