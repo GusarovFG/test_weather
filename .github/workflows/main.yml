@@ -30,7 +30,7 @@ jobs:
 
      - run: flutter build apk --release
 
-     - uses: actions/upload-artifact@v1
+     - uses: actions/upload-artifact@v2
        with:
          name: APK for QA
          path: build/app/outputs/apk/dev/debug/apk_name.apk
