@@ -7,7 +7,7 @@ part 'authentication_state.dart';
 
 class AuthenticationBloc
     extends Bloc<AuthenticationEvent, AuthenticationState> {
-  final FirebaseService firebaseService = FirebaseService();
+  final FirebaseServiceImpl firebaseService = FirebaseServiceImpl();
   bool isRegistration;
 
   AuthenticationBloc(this.isRegistration)

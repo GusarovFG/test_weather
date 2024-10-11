@@ -1,3 +1,4 @@
+//Модель данных о маркере google_maps
 class UserMarker {
   final double lat;
   final double lon;

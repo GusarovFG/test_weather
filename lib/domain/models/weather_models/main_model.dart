@@ -1,3 +1,4 @@
+//Модель данных основных данных о погоде
 class Main {
   final double temp;
   final double feelsLike;

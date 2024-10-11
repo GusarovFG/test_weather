@@ -1,3 +1,4 @@
+//Модель данных скорости ветра
 class Wind {
   final double speed;
 

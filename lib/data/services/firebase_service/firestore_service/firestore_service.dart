@@ -3,15 +3,24 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:test_weather/domain/models/marker_model/user_marker.dart';
 
-class FirestoreService {
-  static final FirestoreService _singleton = FirestoreService._internal();
-  factory FirestoreService() => _singleton;
-  FirestoreService._internal();
+abstract class FirestoreService {
+  //Метод добавления данных о маркере в Firestore
+  Future<void> addMarker(UserMarker marker);
+  //Метод получения данных о маркере из Firestore
+  Future<List<Marker?>> getMarkers();
+}
+
+class FirestoreServiceImpl extends FirestoreService {
+  static final FirestoreServiceImpl _singleton =
+      FirestoreServiceImpl._internal();
+  factory FirestoreServiceImpl() => _singleton;
+  FirestoreServiceImpl._internal();
 
   final String _nameOfCollection = 'markers';
 
   final FirebaseFirestore _fireStoreInstance = FirebaseFirestore.instance;
 
+  @override
   Future<void> addMarker(UserMarker marker) async {
     final markersCollection = _fireStoreInstance.collection(_nameOfCollection);
 
@@ -22,6 +31,7 @@ class FirestoreService {
     }
   }
 
+  @override
   Future<List<Marker?>> getMarkers() async {
     final markersCollection = _fireStoreInstance.collection(_nameOfCollection);
     List<Marker?> markers = [];

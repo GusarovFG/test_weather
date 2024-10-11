@@ -1,14 +1,9 @@
-import 'dart:convert';
-
 import 'package:test_weather/domain/models/weather_models/coord_model.dart';
 import 'package:test_weather/domain/models/weather_models/main_model.dart';
 import 'package:test_weather/domain/models/weather_models/weather_element_model.dart';
 import 'package:test_weather/domain/models/weather_models/wind_model.dart';
 
-Weather weatherFromJson(String str) => Weather.fromJson(json.decode(str));
-
-String weatherToJson(Weather data) => json.encode(data.toJson());
-
+//Модель данных Погоды
 class Weather {
   final Coord coord;
   final List<WeatherElement> weather;

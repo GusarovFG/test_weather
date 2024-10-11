@@ -1,3 +1,4 @@
+//Модель данных пользователя
 class UserModel {
   final String? id;
   final String? email;
