@@ -5,6 +5,9 @@ class AuthTextField extends StatefulWidget {
   final String title;
   bool isSecure = false;
   bool _isHidenText = false;
+
+  final TextEditingController _emailController;
+
   AuthTextField({
     super.key,
     required TextEditingController emailController,
@@ -12,8 +15,6 @@ class AuthTextField extends StatefulWidget {
     required this.isSecure,
   })  : _emailController = emailController,
         _isHidenText = isSecure;
-
-  final TextEditingController _emailController;
 
   @override
   State<AuthTextField> createState() => _AuthTextFieldState();

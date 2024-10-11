@@ -1,3 +1,4 @@
+//Модель данных описания погоды
 class WeatherElement {
   final int id;
   final String main;

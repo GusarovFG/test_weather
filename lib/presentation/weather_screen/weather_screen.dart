@@ -14,7 +14,7 @@ class WeatherScreen extends StatefulWidget {
 }
 
 class _WeatherScreenState extends State<WeatherScreen> {
-  final FirebaseService prefs = FirebaseService();
+  final FirebaseServiceImpl prefs = FirebaseServiceImpl();
   final bloc = WeatherBloc();
 
   @override
@@ -28,7 +28,7 @@ class _WeatherScreenState extends State<WeatherScreen> {
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          onPressed: () => FirebaseService().logOut(),
+          onPressed: () => FirebaseServiceImpl().logOut(),
           icon: const Icon(Icons.logout_sharp),
         ),
         actions: [
@@ -42,32 +42,36 @@ class _WeatherScreenState extends State<WeatherScreen> {
       ),
       body: BlocConsumer<WeatherBloc, WeatherState>(
         bloc: bloc,
-        listener: (BuildContext context, WeatherState state) {},
+        listener: (BuildContext context, WeatherState state) {
+          if (state.runtimeType is WeatherFailure) {
+            showDialog(
+                context: context,
+                builder: (context) {
+                  return SimpleDialog(
+                    title: const Text('Упс!'),
+                    children: [
+                      const Text(
+                        'Что-то пошло не так...',
+                      ),
+                      FilledButton(
+                        onPressed: () {
+                          bloc.add(WeatherLoadEvent());
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Повторить'),
+                      )
+                    ],
+                  );
+                });
+          }
+        },
         listenWhen: (previous, current) => current is WeatherLoading,
         buildWhen: (previous, current) => current is WeatherSuccess,
         builder: (context, state) {
-          print(state.runtimeType);
           switch (state.runtimeType) {
-            case WeatherSuccess:
+            case const (WeatherSuccess):
               final succsess = state as WeatherSuccess;
               return CurrentWeatherScreen(weather: succsess.weather);
-            case WeatherFailure:
-              return SimpleDialog(
-                title: const Text('Упс!'),
-                children: [
-                  const Text(
-                    'Что-то пошло не так...',
-                  ),
-                  FilledButton(
-                    onPressed: () {
-                      context.read<WeatherBloc>().add(WeatherLoadEvent());
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Повторить'),
-                  )
-                ],
-              );
-
             default:
               return const Center(child: CircularProgressIndicator());
           }

@@ -15,15 +15,10 @@ class AuthScreen extends StatefulWidget {
 }
 
 class _AuthScreenState extends State<AuthScreen> {
-  final FirebaseService firebase = FirebaseService();
+  final FirebaseServiceImpl firebase = FirebaseServiceImpl();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final AuthenticationBloc bloc = AuthenticationBloc(true);
-
-  @override
-  void initState() {
-    super.initState();
-  }
 
   @override
   void dispose() {

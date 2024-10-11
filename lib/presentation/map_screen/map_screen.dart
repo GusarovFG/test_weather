@@ -34,10 +34,10 @@ class MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(),
       body: BlocBuilder<MapBloc, MapBlocState>(
         bloc: _mapBloc,
         builder: (context, state) {
-          print(state.runtimeType);
           switch (state.runtimeType) {
             case const (MapSuccessMarkFetchingState):
               final success = state as MapSuccessMarkFetchingState;
@@ -65,8 +65,8 @@ class MapScreenState extends State<MapScreen> {
                   );
                 },
               );
-            case MapLoadingState:
-              return Center(child: CircularProgressIndicator());
+            case const (MapLoadingState):
+              return const Center(child: CircularProgressIndicator());
             default:
               return Container();
           }
@@ -78,7 +78,7 @@ class MapScreenState extends State<MapScreen> {
   Future<void> getCurrentLocation() async {
     final GoogleMapController controller = await _controller.future;
 
-    final location = await LocationService().getLocation();
+    final location = await LocationServiceImpl().getLocation();
     final lon = location?.longitude;
     final lat = location?.latitude;
 

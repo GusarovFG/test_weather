@@ -1,3 +1,4 @@
+//Модель данных координат
 class Coord {
   final double lon;
   final double lat;

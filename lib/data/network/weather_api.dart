@@ -3,17 +3,22 @@ import 'package:test_weather/data/network/api_key.dart';
 import 'package:test_weather/domain/models/weather_models/weather_model.dart';
 
 abstract class WeatherApi {
+  //Метод для получение погоды
   Future<Weather?> fetchWeather({required String lon, required String lat});
 }
 
+//Синглтон для работы с api OpenWeatherMap
 class WeatherApiImpl implements WeatherApi {
   static final WeatherApiImpl _singleton = WeatherApiImpl._internal();
   factory WeatherApiImpl() => WeatherApiImpl._singleton;
   WeatherApiImpl._internal();
 
+  //Данные о погоде
   Weather? weatherData;
 
+  //Dio сервис
   final Dio _dio = Dio();
+  //apikey для openWeatherMap
   final String _apiKey = apiKey;
 
   @override

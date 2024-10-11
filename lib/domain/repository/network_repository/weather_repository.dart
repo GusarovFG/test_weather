@@ -3,8 +3,9 @@ import 'package:test_weather/data/services/location_service/location_service.dar
 import 'package:test_weather/domain/models/weather_models/weather_model.dart';
 
 class WeatherRepository {
+  //Метод получения природы
   static Future<Weather?> getWeather() async {
-    final locationService = await LocationService().getLocation();
+    final locationService = await LocationServiceImpl().getLocation();
     final lon = locationService?.longitude ?? 0;
     final lat = locationService?.latitude ?? 0;
 

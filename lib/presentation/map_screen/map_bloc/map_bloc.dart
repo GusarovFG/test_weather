@@ -12,7 +12,7 @@ class MapBloc extends Bloc<MapBlocEvent, MapBlocState> {
       (event, emit) async {
         try {
           emit(MapLoadingState());
-          final markers = await FirestoreService().getMarkers();
+          final markers = await FirestoreServiceImpl().getMarkers();
 
           emit(MapSuccessMarkFetchingState(markers));
         } catch (e) {
@@ -24,7 +24,7 @@ class MapBloc extends Bloc<MapBlocEvent, MapBlocState> {
     on<AddMarkerEvent>((event, emit) async {
       try {
         emit(MapLoadingState());
-        await FirestoreService().addMarker(UserMarker(
+        await FirestoreServiceImpl().addMarker(UserMarker(
             lat: event.lat,
             lon: event.lon,
             snippet: event.snippet,

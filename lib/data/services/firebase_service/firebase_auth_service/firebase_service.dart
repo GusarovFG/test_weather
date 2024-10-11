@@ -2,20 +2,35 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:test_weather/data/services/shared_preferences_service/shared_preferences_service.dart';
 import 'package:test_weather/domain/models/user_model/user_model.dart';
 
-class FirebaseService {
-  //Синглтон сервиса работы с FireBase
-  static final FirebaseService _singleton = FirebaseService._internal();
-  factory FirebaseService() => _singleton;
-  FirebaseService._internal();
+abstract class FirebaseService {
+  //метод для прослушивания информации о пользователе в Firebase
+  void onListenUser(void Function(User?)? doListen);
+  //Метод регистрации пользователя
+  Future<UserModel?> onRegister(
+      {required String emailAddress, required String password});
+  //метод для входа пользователя с существующими данными
+  Future<UserModel?> onLogin(
+      {required String emailAddress, required String password});
+  //Метод удаления статуса входа
+  void logOut();
+}
 
-  final FirebaseAuth auth = FirebaseAuth.instance;
+class FirebaseServiceImpl extends FirebaseService {
+  //Синглтон сервиса работы с FireBase
+  static final FirebaseServiceImpl _singleton = FirebaseServiceImpl._internal();
+  factory FirebaseServiceImpl() => _singleton;
+  FirebaseServiceImpl._internal();
+
+  FirebaseAuth auth = FirebaseAuth.instance;
   final User? user = FirebaseAuth.instance.currentUser;
   final SharedPreferencesService prefsService = SharedPreferencesServiceImpl();
 
+  @override
   void onListenUser(void Function(User?)? doListen) async {
     auth.authStateChanges().listen(doListen);
   }
 
+  @override
   Future<UserModel?> onRegister(
       {required String emailAddress, required String password}) async {
     try {
@@ -46,6 +61,7 @@ class FirebaseService {
     return null;
   }
 
+  @override
   Future<UserModel?> onLogin(
       {required String emailAddress, required String password}) async {
     try {
@@ -70,6 +86,7 @@ class FirebaseService {
     return null;
   }
 
+  @override
   void logOut() async {
     await prefsService.removeLoginStatus();
     await auth.signOut();

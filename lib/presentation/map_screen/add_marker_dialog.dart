@@ -95,7 +95,6 @@ class AddMarkerDialog extends StatelessWidget {
                 children: [
                   SizedBox(
                     height: 50,
-                    width: 150,
                     child: FilledButton(
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(Colors.blue),
@@ -112,7 +111,6 @@ class AddMarkerDialog extends StatelessWidget {
                   ),
                   SizedBox(
                     height: 50,
-                    width: 150,
                     child: FilledButton(
                       style: ButtonStyle(
                         backgroundColor: WidgetStateProperty.all(Colors.blue),

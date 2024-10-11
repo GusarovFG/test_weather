@@ -12,12 +12,7 @@ class Application extends StatefulWidget {
 }
 
 class _ApplicationState extends State<Application> {
-  final FirebaseService firebase = FirebaseService();
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  final FirebaseServiceImpl firebase = FirebaseServiceImpl();
 
   @override
   Widget build(BuildContext context) {
